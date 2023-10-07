@@ -1,0 +1,9 @@
+/* capitalize text  */
+.cptlise {
+    text-transform: capitalize;
+}
+
+/* text upper-case  */
+.upcase {
+    text-transform: uppercase;
+}

@@ -1,0 +1,149 @@
+<?php
+require_once('config/db.php');
+session_start();
+if (isset($_POST['Attendance1'])) {
+    $sql = "SELECT * FROM `student` where `st_dept` = 'bca' && `st_year`='1' ";
+    $syear = "1";
+    $sup = "st";
+} elseif (isset($_POST['Attendance2'])) {
+    $sql = "SELECT * FROM `student` where `st_dept` = 'bca' && `st_year`='2' ";
+    $syear = "2";
+    $sup = "nd";
+} elseif (isset($_POST['Attendance3'])) {
+    $sql = "SELECT * FROM `student` where `st_dept` = 'bca' && `st_year`='3' ";
+    $syear = "3";
+    $sup = "rd";
+} else {
+    header('location: dashboard.php');
+}
+
+$result1 = mysqli_query($conn, $sql);
+$cdate = date('d-m-Y');
+$sno = 1;
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+        crossorigin="anonymous"></script>
+    <title>Attendance</title>
+</head>
+
+<body class="bg-dark-subtle">
+    <!-- navbar -->
+    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Online Attendance</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link " aria-current="page" href="index.php">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="dashboard.php">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Attendance</a>
+                    </li>
+                </ul>
+                <form class="d-flex" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-outline-success" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- aA-table  -->
+    <div class="container text-center">
+        <table class="table table-striped my-2 rounded">
+            <h5 class="card-title my-3 fs-10">Attendance of BCA
+                <?php echo $syear ?>
+                <sup>
+                    <?php echo $sup ?>
+                </sup> Year
+            </h5>
+            <h5 class="card-title my-3 fs-10">
+                <?php echo $cdate ?>
+            </h5>
+            <thead>
+                <tr class="table-dark text-light upcase">
+                    <th scope="col">sno.</th>
+                    <th scope="col">roll no.</th>
+                    <th scope="col">name</th>
+                    <th scope="col">father's Name</th>
+                    <th scope="col">attendance</th>
+                    <th scope="col">application</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="cptlise">
+                    <?php
+                    while ($row = mysqli_fetch_assoc($result1)) { ?>
+                        <th scope="row">
+                            <?php echo $sno ?>
+                        </th>
+                        <td>
+                            <?php echo $row['roll_no'] ?>
+                        </td>
+                        <td>
+                            <?php echo $row['st_name'] ?>
+                        </td>
+                        <td>
+                            <?php echo $row['st_f_name'] ?>
+                        </td>
+                        <td><button type="button" class="btn btn-success btn-sm pres" id="present<?php echo $sno ?>"
+                                onclick="present(<?php echo $sno ?>)" name="pbtn">P</button>
+                            <button type="button" class="btn btn-danger btn-sm pres" onclick="absent(<?php echo $sno ?>)"
+                                id="absent<?php echo $sno ?>" name="abtn">A</button>
+                            <p id="att<?php echo $sno ?>" class="fw-bold" readonly></p>
+                        </td>
+                        <td>no</td>
+                    </tr>
+                    <?php $sno++;
+                    } ?>
+            </tbody>
+        </table>
+        <div class="col-12">
+            <button class="btn btn-success" type="submit" name="submit_att">Submit</button>
+        </div>
+    </div>
+
+    <!-- Attendance js function -->
+    <script>
+        function present(si) {
+            var pr = document.getElementById('present' + si);
+            pr.remove();
+            var ap = document.getElementById('absent' + si);
+            ap.remove();
+            document.getElementById('att' + si).innerHTML = 'Present';
+            document.getElementById('att' + si).classList.add('text-success');
+        }
+
+        function absent(si) {
+            var pr = document.getElementById('present' + si);
+            pr.remove();
+            var ap = document.getElementById('absent' + si);
+            ap.remove();
+            document.getElementById('att' + si).innerHTML = 'Absent';
+            document.getElementById('att' + si).classList.add('text-danger');
+        }
+    </script>
+</body>
+
+</html>
